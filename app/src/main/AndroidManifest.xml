@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.BOneOnOneChat">
+
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="s" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="s" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="s" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_ADVERTISE"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="s" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="s" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="s" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.App.Starting"
+        tools:targetApi="31">
+        <activity
+            android:name="com.example.BOneOnOneChat.Geek1"
+            android:exported="false"
+            tools:ignore="Instantiatable" />
+        <activity
+            android:name="com.example.BOneOnOneChat.SplashScreen"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/DemoTheme"
+            tools:ignore="LockedOrientationActivity">
+        </activity>
+        <activity
+            android:name="com.example.BOneOnOneChat.editName"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/DemoTheme"
+            tools:ignore="LockedOrientationActivity">
+
+        </activity>
+        <activity
+            android:name="com.example.BOneOnOneChat.Profile"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/DemoTheme"
+            tools:ignore="LockedOrientationActivity">
+
+        </activity>
+        <activity
+            android:name="com.example.BOneOnOneChat.Name"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/DemoTheme"
+            tools:ignore="LockedOrientationActivity" />
+
+        <activity
+            android:name="com.example.BOneOnOneChat.BluetoothChatting"
+            android:screenOrientation="portrait"
+            android:theme="@style/DemoTheme"
+            android:launchMode="singleTop"
+            tools:ignore="LockedOrientationActivity" />
+
+        <activity
+            android:name="com.example.BOneOnOneChat.BluetoothSearch"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/DemoTheme"
+            tools:ignore="LockedOrientationActivity">
+
+        </activity>
+        <activity
+            android:name="com.example.BOneOnOneChat.Setting"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/DemoTheme"
+            tools:ignore="LockedOrientationActivity">
+
+        </activity>
+        <activity
+            android:name="com.example.BOneOnOneChat.MainActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.App.Starting"
+            tools:ignore="LockedOrientationActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <receiver android:name="com.example.BOneOnOneChat.NotificationReceiver" />
+    </application>
+
+</manifest>

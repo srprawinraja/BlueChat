@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/charBlack"
+    tools:context=".Name">
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextPhone"
+
+        android:layout_centerInParent="true"
+        android:backgroundTint="#FFEB3B"
+        android:text="@string/Next"
+        android:translationY="-70dp" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/editTextPhone"
+        android:layout_width="300dp"
+        android:layout_height="48dp"
+        android:layout_below="@+id/textView2"
+        android:layout_centerInParent="true"
+        android:background="@drawable/name"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="@string/Typeyourname"
+        android:inputType="text"
+        android:textColorHint="@color/Black"
+        android:translationY="-135dp" />
+
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/name"
+
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:translationY="-200dp" />
+
+</RelativeLayout>

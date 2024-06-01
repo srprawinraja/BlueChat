@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id='@+id/main'
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="100sp"
+        android:background="#00000000">
+
+        <RelativeLayout
+            android:id="@+id/receiver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="20dp"
+
+            android:padding="8sp"
+            android:translationX="10sp">
+
+            <TextView
+                android:id="@+id/bluetooth_receiver_message_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/receive"
+                android:padding="15dp"
+                android:text="@string/receivermessages"
+                android:textColor="#DFD8D8"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/receiverTime"
+            android:layout_width="60sp"
+            android:layout_height="20sp"
+            android:layout_below="@+id/receiver"
+            android:layout_alignParentStart="true"
+            android:text="@string/am"
+            android:textColor="@color/white"
+            android:translationX="20sp"
+            android:translationY="1sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="100sp"
+        android:background="#00000000">
+
+
+        <RelativeLayout
+            android:id='@+id/sender'
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="20dp"
+            android:padding="8sp"
+            android:translationX="-10sp">
+
+
+            <TextView
+                android:id="@+id/bluetooth_sender_messsage_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/send"
+                android:padding="15dp"
+                android:text="@string/sendermessages"
+                android:textColor="@color/Black"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+
+
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/senderTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/sender"
+            android:layout_alignParentEnd="true"
+            android:text="@string/am"
+            android:textColor="@color/white"
+            android:translationX="-20sp"
+            android:translationY="1sp" />
+
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

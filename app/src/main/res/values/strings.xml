@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">BlueChitChat</string>
+    <string name="receivermessages">receiver message</string>
+    <string name="am">13:43am</string>
+    <string name="type">type your message</string>
+    <string name="sendermessages">sender messages</string>
+    <string name="pm">13:43am</string>
+    <string name="Next">Next</string>
+    <string name="ok">OK</string>
+    <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="name">What\'s your name?</string>
+    <string name="setting">Settings</string>
+    <string name="Account">Account</string>
+    <string name="Editprofile">Edit profile</string>
+    <string name="Notification">Notification</string>
+    <string name="Logout">Log out</string>
+    <string name="Selectafriend">Select a friend</string>
+    <string name="EnterYourName">Enter Your Name</string>
+    <string name="Typeyourname">Type your name</string>
+    <string name="ChitChat">BChat</string>
+    <string name="ChangeYourName">Change Your Name</string>
+    <string name="EditProfile">Edit Profile</string>
+    <string name="UserName">User Name</string>
+    <string name="Color">Color</string>
+    <string name="ProfileColor">Profile Background</string>
+    <string name="NotifyHide">Hide Notfication</string>
+    <string name="Vibrate">Vibrate</string>
+
+
+</resources>

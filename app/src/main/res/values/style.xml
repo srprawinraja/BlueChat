@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Defined a new style with three items of color. -->
+
+
+<resources>
+    <!-- Defined a new style with three items of color. -->
+    <style name="DemoTheme" parent="Theme.AppCompat.Light.NoActionBar">
+
+
+        <!-- Defining that new color in ColorPrimaryDark -->
+        <item name="colorPrimaryDark">@color/Black</item>
+
+    </style>
+
+</resources>
