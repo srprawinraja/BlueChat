@@ -1,7 +1,6 @@
 package com.example.BOneOnOneChat;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -98,8 +97,6 @@ public class Setting extends AppCompatActivity {
            SharedPreferences.Editor editor = preferences.edit();
            editor.clear();
            editor.apply();
-          // Context context = getApplicationContext();
-      //     context.deleteDatabase("my_database");
            SqDatabase s=new SqDatabase(this);
            s.deleteDatabase(this);
            i=new Intent(getApplicationContext(),Name.class);
