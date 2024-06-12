@@ -85,7 +85,7 @@ public class BluetoothChatting extends AppCompatActivity {
     private String myName;
     private String SecondMsg="",ThirdMsg="",FourthMsg="",FivthMsg="";
     private BluetoothDevice bluetoothDevice;
-    private final String secretMessage="lkjafr34[2;52]24'2n";
+    private final String secretMessage="";
 
     private ClientClass clientClass;
     private  ServerClass serverClass,serverClass1;
