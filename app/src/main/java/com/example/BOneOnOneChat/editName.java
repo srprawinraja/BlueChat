@@ -1,8 +1,6 @@
 package com.example.BOneOnOneChat;
 
 import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.text.InputType;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,15 +21,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class editName extends AppCompatActivity {
     private EditText edit;
-    private BluetoothAdapter bluetoothAdapter;
-
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_name);
         edit=findViewById(R.id.editTextPhone);
-        Permission permission=new Permission(this);
+        edit.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         Button ok = findViewById(R.id.button2);
         ImageButton back = findViewById(R.id.back_setting2);
         edit.requestFocus();
@@ -48,33 +45,19 @@ public class editName extends AppCompatActivity {
         ok.setOnClickListener(v -> {
             String name=edit.getText().toString();
             if(checkName(name)){
-                if(permission.isAllPermissionGiven()) {
-                    try{
-                        if(!bluetoothAdapter.isEnabled())bluetoothAdapter.enable();}
-                    catch (NullPointerException e){
-                        setBluetooth();
-                    }
-                    SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("name", name);
-                    editor.apply();
-                    edit.setText(name);
-                    bluetoothAdapter.setName(name);
-                    Toast.makeText(editName.this, "Changed your Name Successfully", Toast.LENGTH_SHORT).show();
-                    Intent i = new Intent(this, Profile.class);
-                    startActivity(i);
-                }
+                SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("name", name);
+                editor.apply();
+                edit.setText(name);
+                Toast.makeText(editName.this, "Changed your Name Successfully", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(this, Profile.class);
+                startActivity(i);
+
             }
         });
     }
 
-    @SuppressLint("MissingPermission")
-    private void setBluetooth() {
-        BluetoothManager manager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        bluetoothAdapter = manager.getAdapter();
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(!bluetoothAdapter.isEnabled())bluetoothAdapter.enable();
-    }
 
     private Boolean checkName(String enterText) {
         if(!enterText.isEmpty() && enterText.length()<=10) {

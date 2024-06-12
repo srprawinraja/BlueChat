@@ -5,7 +5,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/charBlack"
     android:layout_height="match_parent"
-    tools:context=".BluetoothSearch">
+    tools:context=".BluetoothSearch"
+    tools:ignore="VisualLintBounds">
 
     <RelativeLayout
 
@@ -84,7 +85,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textColor="@color/white"
-            android:translationY="10sp">
+            android:translationY="10sp"
+            tools:ignore="VisualLintBounds">
 
 
         </ListView>

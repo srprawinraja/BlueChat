@@ -3,6 +3,7 @@ agp = "8.4.0"
 ambilwarna = "2.0.1"
 appcompatVersion = "1.6.1"
 coreSplashscreen = "1.0.0-beta01"
+exoplayerCore = "2.19.1"
 gson = "2.8.8"
 junit = "4.13.2"
 junitVersion = "1.1.5"
@@ -17,6 +18,7 @@ constraintlayout = "2.1.4"
 ambilwarna = { module = "com.github.yukuku:ambilwarna", version.ref = "ambilwarna" }
 appcompat-v161 = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
 core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+exoplayer-core = { module = "com.google.android.exoplayer:exoplayer-core", version.ref = "exoplayerCore" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

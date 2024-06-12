@@ -107,7 +107,7 @@
                 android:textColor="#C3C3C3"
                 android:textSize="15sp"
                 android:translationY="30sp"
-                tools:ignore="RtlHardcoded,RtlSymmetry" />
+                tools:ignore="RtlHardcoded,RtlSymmetry,VisualLintButtonSize" />
 
             <ImageView
                 android:id="@+id/imageView2"
@@ -167,7 +167,7 @@
                 android:textColor="#C3C3C3"
                 android:textSize="15sp"
                 android:translationY="30sp"
-                tools:ignore="RtlHardcoded,RtlSymmetry" />
+                tools:ignore="RtlHardcoded,RtlSymmetry,VisualLintButtonSize" />
 
             <ImageButton
                 android:id="@+id/switch1"
@@ -193,7 +193,7 @@
                 android:textColor="#C3C3C3"
                 android:textSize="15sp"
                 android:translationY="30sp"
-                tools:ignore="RtlHardcoded,RtlSymmetry" />
+                tools:ignore="RtlHardcoded,RtlSymmetry,VisualLintButtonSize" />
 
             <ImageButton
                 android:id="@+id/switch2"
@@ -206,6 +206,21 @@
                 android:translationY="27sp"
                 tools:ignore="ContentDescription,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
+            <Button
+                android:id="@+id/button_mute"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/button_notify_silent"
+                android:background="@null"
+                android:gravity="left|center_horizontal"
+                android:paddingLeft="20dp"
+                android:text="@string/sound"
+                android:textAllCaps="false"
+                android:textColor="#C3C3C3"
+                android:textSize="15sp"
+                android:translationY="30sp"
+                tools:ignore="RtlHardcoded,RtlSymmetry,VisualLintButtonSize" />
+
             <ImageButton
                 android:id="@+id/switch3"
                 android:layout_width="50sp"
@@ -216,7 +231,6 @@
                 android:translationX="-10sp"
                 android:translationY="27sp"
                 tools:ignore="ContentDescription,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
-
 
             <Button
                 android:id="@+id/button1"
@@ -229,7 +243,8 @@
                 android:layout_marginBottom="60sp"
                 android:background="@drawable/logout"
                 android:text="@string/Logout"
-                android:textColor="#ffff" />
+                android:textColor="#ffff"
+                tools:ignore="TextContrastCheck" />
 
 
         </RelativeLayout>

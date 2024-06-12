@@ -108,7 +108,7 @@
                 android:textColor="@color/white"
                 android:textSize="15sp"
                 android:translationY="30sp"
-                tools:ignore="RtlHardcoded,RtlSymmetry,SpeakableTextPresentCheck" />
+                tools:ignore="RtlHardcoded,RtlSymmetry,SpeakableTextPresentCheck,VisualLintButtonSize" />
 
             <ImageView
                 android:id="@+id/imageView2"
@@ -168,7 +168,7 @@
                 android:textColor="#C3C3C3"
                 android:textSize="15sp"
                 android:translationY="30sp"
-                tools:ignore="HardcodedText,RtlHardcoded,RtlSymmetry" />
+                tools:ignore="HardcodedText,RtlHardcoded,RtlSymmetry,TouchTargetSizeCheck,VisualLintButtonSize" />
 
             <ImageView
                 android:id="@+id/profileColor"
@@ -179,7 +179,7 @@
                 android:background="#555252"
                 android:translationX="-10sp"
                 android:translationY="30sp"
-                tools:ignore="ContentDescription" />
+                tools:ignore="ContentDescription,ImageContrastCheck" />
 
 
         </RelativeLayout>

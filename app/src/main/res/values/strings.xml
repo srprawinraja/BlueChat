@@ -17,7 +17,7 @@
     <string name="Logout">Log out</string>
     <string name="Selectafriend">Select a friend</string>
     <string name="EnterYourName">Enter Your Name</string>
-    <string name="Typeyourname">Type your name</string>
+    <string name="Typeyourname">Type your nick name</string>
     <string name="ChitChat">BChat</string>
     <string name="ChangeYourName">Change Your Name</string>
     <string name="EditProfile">Edit Profile</string>
@@ -26,6 +26,8 @@
     <string name="ProfileColor">Profile Background</string>
     <string name="NotifyHide">Hide Notfication</string>
     <string name="Vibrate">Vibrate</string>
+    <string name="sound">Sound</string>
+
 
 
 </resources>

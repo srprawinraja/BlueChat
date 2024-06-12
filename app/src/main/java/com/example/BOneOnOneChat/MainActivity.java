@@ -1,20 +1,27 @@
 package com.example.BOneOnOneChat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
-
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.splashscreen.SplashScreen;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -25,14 +32,15 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private Intent i;
+    private BluetoothAdapter bluetoothAdapter;
+    private ActivityResultLauncher<Intent> enableBtLauncher;
     private Geek1 geek1;
+    private int code;
+    private String userName;
     private SqDatabase sqDatabase;
     private ArrayList <String[]> userDetail=new ArrayList<>();
-    private SharedPreferences sharedPreferences;
-    private Permission permission;
-    private BluetoothAdapter mBluetoothAdapter;
-    private String oldName;
-    private String name;
+    private PermissionHandler permissionHandler;
+    private int position;
     @Override
     protected void onResume() {
         super.onResume();
@@ -44,127 +52,148 @@ public class MainActivity extends AppCompatActivity {
         catch (NullPointerException ignored){}
     }
 
-    @SuppressLint("MissingPermission")
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishAffinity();
+    }
+
+
+    @SuppressLint({"MissingPermission", "NewApi"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if(savedInstanceState==null) SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
+        SplashScreen.installSplashScreen(this);
         SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
-        if(sharedPreferences.getString("name", null)==null){
-            Intent i=new Intent(this,Name.class);
-            startActivity(i);
+        userName= sharedPreferences.getString("name", "");
+        if(userName.isEmpty()){
+            Intent intent=new Intent(this, Name.class);
+            startActivity(intent);
             finish();
         }
         setContentView(R.layout.activity_main);
+
         LottieAnimationView arrw = findViewById(R.id.img);
         ImageView img = findViewById(R.id.emoji);
-        sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
-        oldName=sharedPreferences.getString("oldName", "");
-        name=sharedPreferences.getString("name", "");
+        ImageButton  search=findViewById(R.id.search_icon);
+        ImageButton setting = findViewById(R.id.imageButton);
+
         ListView listNew = findViewById(R.id.listnew);
         listNew.setDivider(null);
         listNew.setDividerHeight(60);
-        ImageButton bluetoothPermission = findViewById(R.id.blue);
-        ImageButton setting = findViewById(R.id.imageButton);
+
+        sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
+        userName= sharedPreferences.getString("name", "");
+
+
+
+        permissionHandler=new PermissionHandler(this);
         sqDatabase = new SqDatabase(MainActivity.this);
+
         userDetail=sqDatabase.retrieve();
-        permission=new Permission(this);
         if(!userDetail.isEmpty()) {
             arrw.setVisibility(View.INVISIBLE);
             img.setVisibility(View.INVISIBLE);
         }
-            String[] A=new String[userDetail.size()];
-            geek1=new Geek1(this,A,userDetail);
-            listNew.setAdapter(geek1);
+        String[] A=new String[userDetail.size()];
+        geek1=new Geek1(this,A,userDetail);
+        listNew.setAdapter(geek1);
 
-        if(permission.isAllPermissionGiven()) {
-            try{
-                if(!mBluetoothAdapter.isEnabled())mBluetoothAdapter.enable();
-                if(!mBluetoothAdapter.getName().equals(name))mBluetoothAdapter.setName(name);
+        enableBtLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        if(code==1 ) goToChat(userName, position);
+                        else goToSearch();
+                    } else {
+                        finishAffinity();
+                    }
+                }
+        );
+
+
+        setting.setOnClickListener(v -> goToSetting());
+
+        search.setOnClickListener(v -> {
+            Log.d("this is clicked","click");
+            if(permissionHandler.isAllPermissionGiven()) {
+                 bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                if(bluetoothAdapter.isEnabled()){
+                   goToSearch();
+                }else turnOnBluetooth(0);
             }
-            catch (NullPointerException e){
-                setBluetooth(2);
-            }
-
-        }
-
-            setting.setOnClickListener(v -> {
-            i = new Intent(getApplicationContext(), Setting.class);
-            startActivity(i);
         });
 
-        bluetoothPermission.setOnClickListener(v -> {
-            if(permission.isAllPermissionGiven()) {
-                try{
-                    if(!mBluetoothAdapter.isEnabled())mBluetoothAdapter.enable();
-
-                }
-                catch (NullPointerException e){
-                    setBluetooth(0);
-                }
-                i = new Intent(getApplicationContext(), BluetoothSearch.class);
-                startActivity(i);
-            }
-        });
         listNew.setOnItemClickListener((parent, view, position, id) -> {
-            if(permission.isAllPermissionGiven()) {
-                try{
-                    if(!mBluetoothAdapter.isEnabled())mBluetoothAdapter.enable();}
-
-
-                catch (NullPointerException e){
-                    setBluetooth(0);
-                }
-                BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(userDetail.get(position)[1]);
-                Intent i = new Intent(this, BluetoothChatting.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                i.putExtra("device_name", (device.getName()==null)? userDetail.get(position)[0] : device.getName());
-                i.putExtra("device_address", userDetail.get(position)[1]);
-                i.putExtra("option", device);
-                i.putExtra("decider", "main");
-                startActivity(i);}
+            this.position=position;
+           if(permissionHandler.currentApiVersion<permissionHandler.twelve ||permissionHandler.isAllPermissionGiven()){
+               bluetoothAdapter=BluetoothAdapter.getDefaultAdapter();
+               if(!bluetoothAdapter.isEnabled()) turnOnBluetooth(1);
+               else  goToChat(userName, position);
+           }
 
         });
 
 
     }
 
-    @SuppressLint("MissingPermission")
-    private void setNewName(String name) {
-        mBluetoothAdapter.setName(name);
+    private void goToSetting() {
+        i = new Intent(getApplicationContext(), Setting.class);
+        startActivity(i);
+    }
+    @RequiresApi(api = Build.VERSION_CODES.S)
+    private void goToSearch() {
+        if(permissionHandler.isLocationEnable()) {
+            i = new Intent(getApplicationContext(), BluetoothSearch.class);
+            startActivity(i);
+        }else permissionHandler.Alert(3);
     }
 
-    @SuppressLint("MissingPermission")
+    private void goToChat(String userName, int position) {
+        BluetoothDevice device = bluetoothAdapter.getRemoteDevice(userDetail.get(position)[1]);
+        Intent i = new Intent(this, BluetoothChatting.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        i.putExtra("device_name", (userName==null)? userDetail.get(position)[0] : userName);
+        i.putExtra("device_address", userDetail.get(position)[1]);
+        i.putExtra("option", device);
+        i.putExtra("decider", "main");
+        startActivity(i);
+    }
+
+    private void turnOnBluetooth(int code) {
+        this.code=code;
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        enableBtLauncher.launch(enableBtIntent);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.S)
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if(permission.isAllPermissionGiven()) {
-            try{
-                if(!mBluetoothAdapter.isEnabled())mBluetoothAdapter.enable();
-                if(!mBluetoothAdapter.getName().equals(oldName))mBluetoothAdapter.setName(oldName);
-            }
-            catch (NullPointerException e){
-                setBluetooth(1);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(permissionHandler.NEAR_BY_SHARE_REQUEST_CODE==requestCode){
+            if(grantResults[0]== PackageManager.PERMISSION_DENIED){
+                permissionHandler.showRationaleOrNot(android.Manifest.permission.BLUETOOTH_CONNECT);
             }
 
         }
+        else if(requestCode==permissionHandler.ACCESS_FINE_LOCATION_CODE){
+            if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                if((permissionHandler.currentApiVersion==permissionHandler.eleven || permissionHandler.currentApiVersion==permissionHandler.ten) &&ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)==PackageManager.PERMISSION_DENIED){
+                    permissionHandler.Alert(2);
+                }
+
+            }
+            else{
+                permissionHandler. showRationaleOrNot(Manifest.permission.ACCESS_FINE_LOCATION);
+            }
+        }
+
 
     }
 
-    @SuppressLint("MissingPermission")
-    private void setOldName(String oldName) {
-        mBluetoothAdapter.setName(oldName);
-    }
 
-    @SuppressLint("MissingPermission")
-    private void setBluetooth(int code) {
-        BluetoothManager manager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = manager.getAdapter();
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
-        if(code==1 && !mBluetoothAdapter.getName().equals(oldName)) setOldName(sharedPreferences.getString("oldName", ""));
-        else if(code==2 && !mBluetoothAdapter.getName().equals(name)) setNewName(sharedPreferences.getString("name", ""));
-    }
+
 }
 
 

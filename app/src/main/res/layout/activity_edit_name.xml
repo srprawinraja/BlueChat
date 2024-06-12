@@ -48,7 +48,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/rel"
-        android:translationY="10sp">
+        android:translationY="10sp"
+        tools:ignore="VisualLintBounds">
 
         <Button
             android:id="@+id/button2"

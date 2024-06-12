@@ -11,6 +11,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -21,9 +22,10 @@ public class SqDatabase extends SQLiteOpenHelper {
     private static final String USER_NAME = "USER_NAME";
     private static final String USER_ADDRESS = "USER_ADDRESS";
     private static final String PROFILE_BACKGROUND_COLOR = "PROFILE_BACKGROUND_COLOR";
+    private static final String DATABASE_NAME ="dataBase" ;
     private final ArrayList<String[]> userDetail=new ArrayList<>();
     public SqDatabase(@Nullable Context context) {
-        super(context,"dataBase", null, 1);
+        super(context,DATABASE_NAME, null, 1);
     }
 
     @Override
@@ -103,9 +105,18 @@ public class SqDatabase extends SQLiteOpenHelper {
             @SuppressLint("Range") String backgroundColor = cursor.getString(cursor.getColumnIndex(PROFILE_BACKGROUND_COLOR));
             userDetail.add(new String[]{name,address,backgroundColor});
         }
+
         cursor.close();
         db.close();
+
         return userDetail;
+
+    }
+    public void deleteDatabase(Context context){
+        File dbFile = context.getDatabasePath(DATABASE_NAME);
+        if (dbFile.exists()) {
+            dbFile.delete();
+        }
 
     }
 

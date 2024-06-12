@@ -29,7 +29,7 @@ android {
 }
 
 dependencies {
-
+    implementation libs.exoplayer.core
     implementation libs.core.splashscreen
     implementation libs.lottie
     implementation libs.gson

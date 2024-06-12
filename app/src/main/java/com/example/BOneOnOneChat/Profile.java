@@ -25,14 +25,8 @@ public class Profile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
-
-
-
         SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
-
-        String myString = sharedPreferences.getString("name", "");
-
+        String myString = sharedPreferences.getString("name", "no_name");
         Button buttonEdit = findViewById(R.id.button_edit);
         buttonEdit.setText(myString);
         Button color = findViewById(R.id.color);

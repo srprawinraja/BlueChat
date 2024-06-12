@@ -3,31 +3,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.BOneOnOneChat">
 
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"
-        android:usesPermissionFlags="neverForLocation"
-        tools:targetApi="s" />
-
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
-        android:usesPermissionFlags="neverForLocation"
-        tools:targetApi="s" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <!-- target 12 or above-->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
-        android:usesPermissionFlags="neverForLocation"
-        tools:targetApi="s" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+        android:usesPermissionFlags="neverForLocation"/>
+
+    <!-- target below 12-->
+    <uses-permission android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
+        android:maxSdkVersion="30"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"
+        android:maxSdkVersion="30"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"
+        android:maxSdkVersion="30"/>
+
+
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
-    <uses-permission
-        android:name="android.permission.BLUETOOTH_ADVERTISE"
-        android:usesPermissionFlags="neverForLocation"
-        tools:targetApi="s" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
-        android:usesPermissionFlags="neverForLocation"
-        tools:targetApi="s" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"
-        android:usesPermissionFlags="neverForLocation"
-        tools:targetApi="s" />
+
 
     <application
         android:allowBackup="true"
@@ -48,14 +45,14 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/DemoTheme"
-            tools:ignore="LockedOrientationActivity">
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
         </activity>
         <activity
             android:name="com.example.BOneOnOneChat.editName"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/DemoTheme"
-            tools:ignore="LockedOrientationActivity">
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
 
         </activity>
         <activity
@@ -63,7 +60,7 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/DemoTheme"
-            tools:ignore="LockedOrientationActivity">
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
 
         </activity>
         <activity
@@ -71,21 +68,21 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/DemoTheme"
-            tools:ignore="LockedOrientationActivity" />
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
 
         <activity
             android:name="com.example.BOneOnOneChat.BluetoothChatting"
             android:screenOrientation="portrait"
             android:theme="@style/DemoTheme"
             android:launchMode="singleTop"
-            tools:ignore="LockedOrientationActivity" />
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
 
         <activity
             android:name="com.example.BOneOnOneChat.BluetoothSearch"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/DemoTheme"
-            tools:ignore="LockedOrientationActivity">
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
 
         </activity>
         <activity
@@ -93,7 +90,7 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/DemoTheme"
-            tools:ignore="LockedOrientationActivity">
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
 
         </activity>
         <activity
@@ -101,7 +98,7 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.App.Starting"
-            tools:ignore="LockedOrientationActivity" >
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

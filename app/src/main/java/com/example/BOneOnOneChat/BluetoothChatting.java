@@ -3,14 +3,14 @@ package com.example.BOneOnOneChat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,7 +35,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -44,6 +47,8 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -61,51 +66,59 @@ import java.util.UUID;
 
 
 public class BluetoothChatting extends AppCompatActivity {
-    private  NotificationManager notificationManager;
     private TextView status;
     private  BluetoothAdapter bluetoothAdapter;
+    private ExoPlayer player;
+    private Uri audioUri;
     private EditText edit;
+    private boolean sound;
+
     private AlertDialog.Builder builder;
     public static Boolean mute=false;
+    private ActivityResultLauncher<Intent> enableBtLauncher;
+
     private String device_name,device_address;
-    private String color;
+    private String myColor;
     private String decider;
     private RecyclerView.Adapter adapter;
     private  SqDatabase sqDatabase;
+    private String myName;
     private String SecondMsg="",ThirdMsg="",FourthMsg="",FivthMsg="";
-    private final int currentApiVersion = Build.VERSION.SDK_INT;
     private BluetoothDevice bluetoothDevice;
-    private final String secretMessage="lkjafr34[2;52]24'2d";
+    private final String secretMessage="lkjafr34[2;52]24'2n";
+
     private ClientClass clientClass;
     private  ServerClass serverClass,serverClass1;
-    private Permission permission;
+    private PermissionHandler permissionHandler;
     private SharedPreferences sharedPreferences;
     private SpannableString[] spanArray;
-    private Boolean ScreenOff=true,check;
+    private Boolean ScreenOff = true;
+    private Boolean check;
+    private TextView text;
     SendReceive sendReceive;
-    private int FiveNotify=1,count=0;
+    private MediaItem mediaItem;
+    private int FiveNotify = 1, count = 0;
     static final int STATE_LISTENING = 1;
-    static final int STATE_CONNECTING=2;
-    static final int STATE_CONNECTED=3;
-    static final int STATE_CONNECTION_FAILED=4;
-    static final int STATE_MESSAGE_RECEIVED=5;
-    static final int STATE_WAITING=6;
-    private Boolean p=false;
-    private  String[] storeMsg;
+    static final int STATE_CONNECTING = 2;
+    static final int STATE_CONNECTED = 3;
+    static final int STATE_CONNECTION_FAILED = 4;
+    static final int STATE_MESSAGE_RECEIVED = 5;
+    static final int STATE_WAITING = 6;
+    private Boolean p = false;
+    private String[] storeMsg;
     private LinearLayout item;
     private List<BluetoothGetSet> messagesList = new ArrayList<>();
     private BlueAdapter blueAdapter;
     private RecyclerView userMessagesList;
     private static final String APP_NAME = "BTChat";
-    private static final UUID MY_UUID=UUID.fromString("8ce255c0-223a-11e0-ac64-0803450c9a66");
+    private static final UUID MY_UUID = UUID.fromString("8ce255c0-223a-11e0-ac64-0803450c9a66");
 
 
-    private final Handler handler=new Handler(new Handler.Callback() {
+    private final Handler handler = new Handler(new Handler.Callback() {
         @SuppressLint({"SetTextI18n", "NotifyDataSetChanged"})
         @Override
         public boolean handleMessage(@NonNull Message msg) {
-            switch (msg.what)
-            {
+            switch (msg.what) {
                 case STATE_LISTENING:
                     status.setText("Listening");
                     break;
@@ -123,20 +136,31 @@ public class BluetoothChatting extends AppCompatActivity {
                     break;
 
                 case STATE_MESSAGE_RECEIVED:
-                    byte[] readBuff= (byte[]) msg.obj;
-                    String tempMsg=new String(readBuff,0,msg.arg1);
-                    if(tempMsg.length()>19 && tempMsg.startsWith(secretMessage) ) {
-                        Message message = Message.obtain();
-                        message.what = STATE_CONNECTED;
-                        handler.sendMessage(message);
-                        if(!check) {
-                            check=true;
-                            sendReceive.write((secretMessage + color).getBytes());
-                            sqDatabase.add(device_name, device_address, tempMsg.substring(20));
+
+                    Message message=Message.obtain();
+                    message.what=STATE_CONNECTED;
+                    handler.sendMessage(message);
+                    byte[] readBuff = (byte[]) msg.obj;
+                    String tempMsg = new String(readBuff, 0, msg.arg1);
+                    String code="";
+                    if(tempMsg.length()>20) code = tempMsg.substring(1, 20);
+
+                    if (tempMsg.length() > 20 && Character.isDigit(tempMsg.charAt(0))&& code.equals(secretMessage)) {
+                        int nameLen = Character.getNumericValue(tempMsg.charAt(0));
+                        String name = tempMsg.substring(20, 20 + nameLen);
+                        String color = tempMsg.substring(20 + nameLen + 1);
+                        if (!check) {
+                                check = true;
+                                text.setText(name);
+                                sendReceive.write((myName.length() + secretMessage + myName + myColor).getBytes());
+                                sqDatabase.add(name, device_address, color);
                         }
-                    }
-                    else {
-                        int thirteen=33;
+                    } else {
+                        if(sound) {
+                            player.setMediaItem(mediaItem);
+                            player.prepare();
+                            player.play();
+                        }
                         Date currentTime = new Date();
                         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", new Locale("en", "IN"));
                         String formattedTime = sdf.format(currentTime);
@@ -146,15 +170,12 @@ public class BluetoothChatting extends AppCompatActivity {
                         bluetoothObj.setTime(formattedTime);
                         messagesList.add(bluetoothObj);
                         if (ScreenOff) {
-                            if(currentApiVersion < thirteen || ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
                             showNotification(tempMsg);
-                        } }
-                        else{
+                        } else {
                             blueAdapter.notifyDataSetChanged();
                             userMessagesList.smoothScrollToPosition(Objects.requireNonNull(userMessagesList.getAdapter()).getItemCount());
                         }
-
-                               }
+                    }
                     break;
             }
             return false;
@@ -165,49 +186,47 @@ public class BluetoothChatting extends AppCompatActivity {
         //String hiText = "<font color='#FF0000'>hi</font>";
         // Html.fromHtml(hiText)
 
-        count+=1;
-        if(FiveNotify>=1){
+        count += 1;
+        if (FiveNotify >= 1) {
             SecondMsg = storeMsg[0];
-            storeMsg[0]=" "+device_name+" "+Messages;
-            spanArray[0]=span(storeMsg[0]);
+            storeMsg[0] = " " + device_name + " " + Messages;
+            spanArray[0] = span(storeMsg[0]);
         }
-        if(FiveNotify>=2){
-            ThirdMsg=storeMsg[1];
-            storeMsg[1]=SecondMsg;
-            spanArray[1]=span(storeMsg[1]);
+        if (FiveNotify >= 2) {
+            ThirdMsg = storeMsg[1];
+            storeMsg[1] = SecondMsg;
+            spanArray[1] = span(storeMsg[1]);
         }
-        if(FiveNotify>=3){
-            FourthMsg=storeMsg[2];
-            storeMsg[2]=ThirdMsg;
-            spanArray[2]=span(storeMsg[2]);
+        if (FiveNotify >= 3) {
+            FourthMsg = storeMsg[2];
+            storeMsg[2] = ThirdMsg;
+            spanArray[2] = span(storeMsg[2]);
 
         }
-        if(FiveNotify>=4){
-            FivthMsg=storeMsg[3];
-            storeMsg[3]=FourthMsg;
-            spanArray[3]=span(storeMsg[3]);
+        if (FiveNotify >= 4) {
+            FivthMsg = storeMsg[3];
+            storeMsg[3] = FourthMsg;
+            spanArray[3] = span(storeMsg[3]);
         }
-        if(FiveNotify>=5){
-            storeMsg[4]=FivthMsg;
-            spanArray[4]=span(storeMsg[4]);
+        if (FiveNotify >= 5) {
+            storeMsg[4] = FivthMsg;
+            spanArray[4] = span(storeMsg[4]);
         }
-        if(FiveNotify<5) FiveNotify+=1;
+        if (FiveNotify < 5) FiveNotify += 1;
 
-        if(sharedPreferences.getBoolean("notificationSound",false)&&!mute) {
+        if (sharedPreferences.getBoolean("notificationSound", false) && !mute) {
             // Vibrate for 500 milliseconds
 
-            ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(200,-1));
+            ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(200, -1));
 
         }
 
 
-        Intent intent = new Intent(getApplicationContext(),BluetoothChatting.class);
-        //intent.putExtra("broad",true);
+        Intent intent = new Intent(getApplicationContext(), BluetoothChatting.class);
         @SuppressLint("UnspecifiedImmutableFlag") PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder;
         if(sharedPreferences.getBoolean("notificationHide",false)&&!mute) {
 
-            Uri soundUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.notifiy);
             Intent buttonIntent = new Intent(this, NotificationReceiver.class);
              @SuppressLint("UnspecifiedImmutableFlag") PendingIntent buttonPendingIntent = PendingIntent.getBroadcast(BluetoothChatting.this, 1, buttonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -223,7 +242,7 @@ public class BluetoothChatting extends AppCompatActivity {
                     .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                     .setSmallIcon(R.drawable.b44)
                     .addAction(action)
-                    .setSound(soundUri)
+                    .setSound(audioUri)
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent);
 
@@ -242,8 +261,9 @@ public class BluetoothChatting extends AppCompatActivity {
                     .addLine(spanArray[0])
             );
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(BluetoothChatting.this);
-
-            notificationManager.notify(1, builder.build());
+            if(ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)==PackageManager.PERMISSION_GRANTED) {
+                notificationManager.notify(1, builder.build());
+            }
 
         }
         else if(!mute){
@@ -278,36 +298,60 @@ public class BluetoothChatting extends AppCompatActivity {
 
 
 
+    @RequiresApi(api = Build.VERSION_CODES.S)
     @SuppressLint({"MissingPermission", "HardwareIds", "NotifyDataSetChanged"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_bluetooth_chatting);
+
         ScreenOff=true;
         check=false;
         builder = new AlertDialog.Builder(this);
+        permissionHandler=new PermissionHandler(this);
+        sqDatabase = new SqDatabase(BluetoothChatting.this);
+
+
         spanArray=new SpannableString[5];
         storeMsg = new String[5];
-        Intent i = getIntent();
+
+
         sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
-        color= String.valueOf(sharedPreferences.getInt("profileColor", 0));
-        setContentView(R.layout.activity_bluetooth_chatting);
-        permission=new Permission(this);
+        myColor= String.valueOf(sharedPreferences.getInt("profileColor", 0));
+        myName=sharedPreferences.getString("name","");
+        sound=sharedPreferences.getBoolean("sound",false);
         userMessagesList= findViewById(R.id.bluetooth_cycle);
-        TextView text = findViewById(R.id.bluetooth_textView7);
+        text = findViewById(R.id.bluetooth_textView7);
         edit=findViewById(R.id.bluetooth_input_message);
-        sqDatabase = new SqDatabase(BluetoothChatting.this);
-        ImageButton backSetting = findViewById(R.id.back_setting3);
-        Button connect = findViewById(R.id.connect);
-        Button disconnect = findViewById(R.id.disconnect);
         edit=findViewById(R.id.bluetooth_input_message);
         status=findViewById(R.id.bluetooth_textView2);
+        ImageButton backSetting = findViewById(R.id.back_setting3);
         ImageButton option = findViewById(R.id.option);
+        Button connect = findViewById(R.id.connect);
+        Button disconnect = findViewById(R.id.disconnect);
         RelativeLayout topLay = findViewById(R.id.bluetooth_rel);
         ImageView send = findViewById(R.id.bluetooth_send);
-        NotificationChannel channel1=new NotificationChannel("Notification","Notification", NotificationManager.IMPORTANCE_HIGH);
-        setNotify(channel1);
         item=findViewById(R.id.item);
 
+        player = new ExoPlayer.Builder(this).build();
+        audioUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getPackageName() + "/" + R.raw.notifiy);
+        mediaItem = MediaItem.fromUri(audioUri);
+
+        enableBtLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        serverClass=new ServerClass();
+                        clientClass = new ClientClass(bluetoothDevice);
+                        clientClass.start();
+                    } else {
+
+                        finishAffinity();
+                    }
+                }
+        );
+
+        Intent i = getIntent();
         device_name = i.getStringExtra("device_name");
         device_address=i.getStringExtra("device_address");
         decider = i.getStringExtra("decider");
@@ -324,14 +368,18 @@ public class BluetoothChatting extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         userMessagesList.setLayoutManager(linearLayoutManager);
         userMessagesList.setAdapter(blueAdapter);
-         adapter = userMessagesList.getAdapter();
+        adapter = userMessagesList.getAdapter();
         if (adapter != null && adapter.getItemCount() > 0) userMessagesList.scrollToPosition(adapter.getItemCount() - 1);
-        if(permission.isAllPermissionGiven()){
-            setBluetooth();
-            serverClass=new ServerClass();
-            clientClass = new ClientClass(bluetoothDevice);
-            clientClass.start();
-        }else status.setText("");
+
+        if(permissionHandler.currentApiVersion<permissionHandler.twelve || permissionHandler.isAllPermissionGiven()){
+            bluetoothAdapter=BluetoothAdapter.getDefaultAdapter();
+            if(!bluetoothAdapter.isEnabled()) turnOnBluetooth();
+            else autoConnect(bluetoothDevice);
+        }else {
+            Message message=Message.obtain();
+            message.what=STATE_CONNECTION_FAILED;
+            handler.sendMessage(message);
+        }
         // up and down changed
         if(device_name.length()>10) {
             text.setText(device_name.substring(0, 9));
@@ -355,36 +403,36 @@ public class BluetoothChatting extends AppCompatActivity {
                 }
                 serverClass.run=false;
                try{ serverClass1.run=false;}catch(NullPointerException ignored){}
-                super.onBackPressed();
+                Intent i1;
+                if(decider.equals("main")) i1 =new Intent(BluetoothChatting.this,MainActivity.class);
+                else i1 =new Intent(BluetoothChatting.this,BluetoothSearch.class);
+                startActivity(i1);
             }
         });
         topLay.setOnClickListener(v -> item.setVisibility(View.GONE));
         send.setOnClickListener(v -> {
-            if(permission.isAllPermissionGiven()) {
-                try{
-                    bluetoothAdapter.enable();
-                }
-                catch(NullPointerException e){
-                    setBluetooth();
-                }
+            if(permissionHandler.currentApiVersion<permissionHandler.twelve || permissionHandler.isAllPermissionGiven()) {
                 String alpha = edit.getText().toString();
                 if (!alpha.isEmpty() && status.getText().toString().equals("Connected")) {
-                    Date currentTime = new Date();
-                    SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", new Locale("en", "IN"));
-                    String formattedTime = sdf.format(currentTime);
-                    String string = String.valueOf(edit.getText());
-                    try {
-                        sendReceive.write(string.getBytes());
-                        BluetoothGetSet bluetoothObj = new BluetoothGetSet();
-                        bluetoothObj.setFrom("sender");
-                        bluetoothObj.setMessage(alpha);
-                        bluetoothObj.setTime(formattedTime);
-                        messagesList.add(bluetoothObj);
-                        blueAdapter.notifyDataSetChanged();
-                        userMessagesList.smoothScrollToPosition(Objects.requireNonNull(userMessagesList.getAdapter()).getItemCount());
-                        edit.setText("");
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
+                    if(!bluetoothAdapter.isEnabled()) turnOnBluetooth();
+                    else {
+                        Date currentTime = new Date();
+                        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", new Locale("en", "IN"));
+                        String formattedTime = sdf.format(currentTime);
+                        String string = String.valueOf(edit.getText());
+                        try {
+                            sendReceive.write(string.getBytes());
+                            BluetoothGetSet bluetoothObj = new BluetoothGetSet();
+                            bluetoothObj.setFrom("sender");
+                            bluetoothObj.setMessage(alpha);
+                            bluetoothObj.setTime(formattedTime);
+                            messagesList.add(bluetoothObj);
+                            blueAdapter.notifyDataSetChanged();
+                            userMessagesList.smoothScrollToPosition(Objects.requireNonNull(userMessagesList.getAdapter()).getItemCount());
+                            edit.setText("");
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                 }
@@ -392,29 +440,25 @@ public class BluetoothChatting extends AppCompatActivity {
         });
         connect.setOnClickListener(v -> {
 
-            if(permission.isAllPermissionGiven()) {
-
+            if(permissionHandler.currentApiVersion<permissionHandler.twelve || permissionHandler.isAllPermissionGiven()) {
+                bluetoothAdapter=BluetoothAdapter.getDefaultAdapter();
+                if(!status.getText().toString().equals("Connected") && bluetoothAdapter.isEnabled()){
                 if (status.getText().toString().isEmpty() || status.getText().toString().equals("Waiting to be Connected"))
-                        try{
-                            bluetoothAdapter.enable();
-                        }
-                        catch(NullPointerException e){
-                            setBluetooth();
-                        }
-                        try{serverClass.run=false;}catch (NullPointerException e){
-                            serverClass=new ServerClass();
-                        }
-                        try{serverClass1.run=false;}catch (NullPointerException ignored){}
-                        try {
-                            serverClass.serverSocket.close();
-                            serverClass1.serverSocket.close();
-                        } catch (IOException | NullPointerException e) {
-                            e.printStackTrace();
-                        }
-                        clientClass = new ClientClass(bluetoothDevice);
-                        clientClass.start();
 
-            }
+                    try{serverClass.run=false;}catch (NullPointerException e){
+                        serverClass=new ServerClass();
+                    }
+                    try{serverClass1.run=false;}catch (NullPointerException ignored){}
+                    try {
+                        serverClass.serverSocket.close();
+                        serverClass1.serverSocket.close();
+                    } catch (IOException | NullPointerException e) {
+                            e.printStackTrace();
+                    }
+                    clientClass = new ClientClass(bluetoothDevice);
+                    clientClass.start();
+
+            }}else turnOnBluetooth();
         });
         disconnect.setOnClickListener(v -> {
             if(status.getText().toString().equals("Connected")){
@@ -434,18 +478,31 @@ public class BluetoothChatting extends AppCompatActivity {
     }
 
     @SuppressLint("MissingPermission")
-    private void setBluetooth() {
-        BluetoothManager manager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        bluetoothAdapter = manager.getAdapter();
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(!bluetoothAdapter.isEnabled())   bluetoothAdapter.enable();
+    private void turnOnBluetooth() {
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+
+// Launch the intent using the launcher
+        enableBtLauncher.launch(enableBtIntent);
     }
+
+    private void autoConnect(BluetoothDevice bluetoothDevice) {
+        serverClass=new ServerClass();
+        clientClass = new ClientClass(bluetoothDevice);
+        clientClass.start();
+    }
+
 
     @Override
     protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
         if (adapter != null && adapter.getItemCount() > 0) userMessagesList.scrollToPosition(adapter.getItemCount() - 1);
         if (adapter != null && adapter.getItemCount() > 0) userMessagesList.scrollToPosition(adapter.getItemCount() - 1);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(player!=null) {player.release(); player=null;}
     }
 
     @Override
@@ -491,10 +548,6 @@ public class BluetoothChatting extends AppCompatActivity {
 
     }
 
-    private void setNotify(NotificationChannel ch) {
-        notificationManager= getSystemService(NotificationManager.class);
-        notificationManager.createNotificationChannel(ch);
-    }
 
     private class ServerClass extends Thread{
         private  BluetoothServerSocket serverSocket;
@@ -532,17 +585,20 @@ public class BluetoothChatting extends AppCompatActivity {
                 }
                 if(socket!=null)
                 {
+                    Message message=Message.obtain();
+                    message.what=STATE_CONNECTED;
+                    handler.sendMessage(message);
                     try {
                         serverSocket.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                   if(serverClass!=null) serverClass.run=false;
+                    if(serverClass1!=null)serverClass1.run=false;
                     run=false;
-                    Message message=Message.obtain();
-                    message.what=STATE_CONNECTED;
-                    handler.sendMessage(message);
                     sendReceive=new SendReceive(socket);
-                    sendReceive.write((secretMessage+color).getBytes());
+                    sendReceive.write((myName.length()+secretMessage+myName+myColor).getBytes());
+
                     sendReceive.start();
                     break;
                 }
@@ -675,6 +731,10 @@ public class BluetoothChatting extends AppCompatActivity {
             }
             serverClass.run=false;
             try{serverClass1.run=false;} catch (NullPointerException ignored){}
+            Intent i1;
+            if(decider.equals("main")) i1 =new Intent(BluetoothChatting.this,MainActivity.class);
+            else i1 =new Intent(BluetoothChatting.this,BluetoothSearch.class);
+            startActivity(i1);
             super.onBackPressed();
         }
     }
@@ -683,8 +743,6 @@ public class BluetoothChatting extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         ScreenOff=true;
-
-
     }
 
 
@@ -696,9 +754,35 @@ public class BluetoothChatting extends AppCompatActivity {
         ScreenOff=false;
         storeMsg=new String[5];
         FiveNotify=1;
-        notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(1);
     }
+    @RequiresApi(api = Build.VERSION_CODES.S)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(permissionHandler.NEAR_BY_SHARE_REQUEST_CODE==requestCode){
+            if(grantResults[0]== PackageManager.PERMISSION_DENIED){
+                permissionHandler.showRationaleOrNot(android.Manifest.permission.BLUETOOTH_CONNECT);
+            }
+
+        }
+        else if(requestCode==permissionHandler.ACCESS_FINE_LOCATION_CODE){
+            if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                if((permissionHandler.currentApiVersion==permissionHandler.eleven || permissionHandler.currentApiVersion==permissionHandler.ten) &&ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)==PackageManager.PERMISSION_DENIED){
+                    permissionHandler.Alert(2);
+                }
+
+            }
+            else{
+                permissionHandler. showRationaleOrNot(Manifest.permission.ACCESS_FINE_LOCATION);
+            }
+        }
+
+
+    }
+
 
 
 }

@@ -81,7 +81,7 @@
 
 
         <RelativeLayout
-            android:id="@+id/button3"
+            android:id="@+id/search"
             android:layout_width="70sp"
             android:layout_height="70sp"
             android:layout_alignParentEnd="true"
@@ -91,10 +91,10 @@
             android:translationY="-40sp">
 
             <ImageButton
-                android:id="@+id/blue"
+                android:id="@+id/search_icon"
                 android:layout_width="40sp"
                 android:layout_height="40sp"
-                android:background="@drawable/ic_baseline_chat_24"
+                android:background="@drawable/ic_baseline_bluetooth_searching_24"
                 android:translationX="15dp"
                 android:translationY="15dp"
                 tools:ignore="ContentDescription,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
@@ -107,7 +107,7 @@
         android:layout_alignParentBottom="true"
         android:translationX="-90sp"
         android:translationY="-25sp"
-        android:layout_toStartOf="@id/button3">
+        android:layout_toStartOf="@id/search">
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/img"
             android:layout_width="wrap_content"
