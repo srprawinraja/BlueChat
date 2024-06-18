@@ -612,7 +612,6 @@ public class BluetoothChatting extends AppCompatActivity {
     private class ClientClass extends Thread {
         private BluetoothSocket socket;
 
-
         @SuppressLint("MissingPermission")
         public ClientClass (BluetoothDevice device1)
         {

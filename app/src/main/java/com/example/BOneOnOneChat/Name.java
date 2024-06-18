@@ -63,8 +63,6 @@ public class Name extends AppCompatActivity {
             int color = ContextCompat.getColor(Name.this, R.color.profilebackground);
             editor.putInt("profileColor", color);
             editor.apply();
-
-
             Toast.makeText(Name.this, "Welcome " + enterText + "!", Toast.LENGTH_SHORT).show();
             Intent i = new Intent(Name.this, MainActivity.class);
             i.putExtra("username", enterText);
