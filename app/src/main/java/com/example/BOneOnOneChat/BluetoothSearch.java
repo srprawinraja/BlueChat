@@ -26,7 +26,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
 import com.airbnb.lottie.LottieAnimationView;
 
@@ -128,13 +127,12 @@ public class BluetoothSearch extends AppCompatActivity {
     private void search() {
         clear();
         if(permissionHandler.currentApiVersion<permissionHandler.twelve || permissionHandler.isAllPermissionGiven()){
-            bluetoothAdapter=BluetoothAdapter.getDefaultAdapter();
-            if(!bluetoothAdapter.isEnabled()){
-                turnOnBluetooth(0);
-            }
-            else {
-                if(permissionHandler.isLocationEnable()) {
-
+            if(permissionHandler.isLocationEnable()) {
+                bluetoothAdapter=BluetoothAdapter.getDefaultAdapter();
+                if(!bluetoothAdapter.isEnabled()){
+                    turnOnBluetooth(0);
+                }
+                else{
                     if(!bluetoothAdapter.isDiscovering()) {
                         status.setText("");
                         Toast.makeText(this, "Warning: Your saved name won't appear to your friends. The Bluetooth device name will be shown instead.", Toast.LENGTH_LONG).show();
@@ -142,8 +140,9 @@ public class BluetoothSearch extends AppCompatActivity {
                         deviceDiscoverble();
                         bluetoothAdapter.startDiscovery();
                     }
-                }else permissionHandler.Alert(3);
-            }
+                }
+            }else permissionHandler.Alert(2); // change 2 to 3
+
         }
 
     }
@@ -251,14 +250,7 @@ public class BluetoothSearch extends AppCompatActivity {
 
         }
         else if(requestCode==permissionHandler.ACCESS_FINE_LOCATION_CODE){
-            if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                if((permissionHandler.currentApiVersion==permissionHandler.eleven || permissionHandler.currentApiVersion==permissionHandler.ten) && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)==PackageManager.PERMISSION_DENIED){
-                    permissionHandler.Alert(2);
-
-                }
-
-            }
-            else{
+            if(grantResults[0]==PackageManager.PERMISSION_DENIED) {
                 permissionHandler. showRationaleOrNot(Manifest.permission.ACCESS_FINE_LOCATION);
             }
         }

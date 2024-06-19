@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import java.util.Objects;
@@ -148,14 +147,12 @@ public class Name extends AppCompatActivity {
             }
         }
         else if(requestCode==permissionHandler.ACCESS_FINE_LOCATION_CODE){
-            if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)==PackageManager.PERMISSION_DENIED){
-                    permissionHandler.Alert(2);
-                }
-
+            if(grantResults[0]==PackageManager.PERMISSION_DENIED){
+                permissionHandler. showRationaleOrNot(Manifest.permission.ACCESS_FINE_LOCATION);
             }
             else{
-               permissionHandler. showRationaleOrNot(Manifest.permission.ACCESS_FINE_LOCATION);
+                redirect(enterTxt);
+
             }
         }
 

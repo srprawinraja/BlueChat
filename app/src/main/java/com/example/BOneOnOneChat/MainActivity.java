@@ -21,7 +21,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.splashscreen.SplashScreen;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -117,10 +116,7 @@ public class MainActivity extends AppCompatActivity {
         search.setOnClickListener(v -> {
             Log.d("this is clicked","click");
             if(permissionHandler.isAllPermissionGiven()) {
-                 bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                if(bluetoothAdapter.isEnabled()){
-                   goToSearch();
-                }else turnOnBluetooth(0);
+                goToSearch();
             }
         });
 
@@ -144,9 +140,12 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.S)
     private void goToSearch() {
         if(permissionHandler.isLocationEnable()) {
-            i = new Intent(getApplicationContext(), BluetoothSearch.class);
-            startActivity(i);
-        }else permissionHandler.Alert(3);
+            bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if(bluetoothAdapter.isEnabled()){
+                i = new Intent(getApplicationContext(), BluetoothSearch.class);
+                startActivity(i);
+            }else turnOnBluetooth(0);
+        }else permissionHandler.Alert(2); // change 3 to 2
     }
 
     private void goToChat(String userName, int position) {
@@ -178,15 +177,10 @@ public class MainActivity extends AppCompatActivity {
 
         }
         else if(requestCode==permissionHandler.ACCESS_FINE_LOCATION_CODE){
-            if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                if((permissionHandler.currentApiVersion==permissionHandler.eleven || permissionHandler.currentApiVersion==permissionHandler.ten) &&ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)==PackageManager.PERMISSION_DENIED){
-                    permissionHandler.Alert(2);
-                }
-
-            }
-            else{
+            if(grantResults[0]==PackageManager.PERMISSION_DENIED){
                 permissionHandler. showRationaleOrNot(Manifest.permission.ACCESS_FINE_LOCATION);
             }
+
         }
 
 
