@@ -10,13 +10,14 @@ import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
+/** @noinspection ALL*/
 public class Setting extends AppCompatActivity {
     private Intent i;
     private ImageButton switch1,switch2,switch3;
     private Boolean BoolSwitch1,BoolSwitch2,BoolSwitch3;
     private SharedPreferences sharedPreferences;
     private  SharedPreferences.Editor editor;
-    @SuppressLint({"MissingPermission", "UseCompatLoadingForDrawables"})
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

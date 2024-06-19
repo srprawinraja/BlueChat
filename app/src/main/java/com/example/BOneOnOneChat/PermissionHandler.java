@@ -34,14 +34,13 @@ public class PermissionHandler {
         ACCESS_FINE_LOCATION_CODE=11;
         NEAR_BY_SHARE_REQUEST_CODE=12;
         BLUETOOTH_ENABLE_REQUEST_CODE=100;
-        messages=new String[]{"To connect with nearby devices, our app needs access to your device's location. Please grant the permission.", "To connect with nearby devices, our app needs access to your device's location. You can grant this permission manually in the app settings.", "You must manually select the option 'Allow all the time' for location in order for this app to work!","Please turn on location services to enable Bluetooth scanning."};
+        messages=new String[]{"To connect with nearby devices, our app needs access to your device's location. Please grant the permission.", "To connect with nearby devices, our app needs access to your device's location. You can grant this permission manually in the app settings.","Please turn on location services to enable Bluetooth scanning."};
 
     }
     @RequiresApi(api = Build.VERSION_CODES.S)
     protected Boolean isAllPermissionGiven(){
         boolean given= currentApiVersion < twelve || context.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_DENIED;
-        if(currentApiVersion<twelve && context.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_DENIED) given=false;
-        else if((currentApiVersion==eleven || currentApiVersion==ten) && context.checkSelfPermission(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)== PackageManager.PERMISSION_DENIED) given=false;
+        if((currentApiVersion==eleven || currentApiVersion==ten)&&context.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_DENIED) given=false;
         if(!given) askPermission();
         return given;
     }
@@ -53,6 +52,9 @@ public class PermissionHandler {
         context.startActivity(intent);
     }
     protected Boolean  isLocationEnable(){
+
+
+        if(currentApiVersion!=eleven && currentApiVersion!=ten) return true;
         LocationManager locationManager =
                 (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -62,10 +64,9 @@ public class PermissionHandler {
         if(currentApiVersion>=twelve && context.checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT)== PackageManager.PERMISSION_DENIED){
             nearBysharePermission();
         }
-        if(currentApiVersion<twelve && context.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_DENIED){
+        if((currentApiVersion==eleven || currentApiVersion==ten) && context.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_DENIED){
             accessFineLocation();
         }
-        else if(currentApiVersion==eleven || currentApiVersion==ten && context.checkSelfPermission(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)== PackageManager.PERMISSION_DENIED) Alert(2);
 
     }
 
@@ -97,8 +98,7 @@ public class PermissionHandler {
                 .setPositiveButton("OK", (dialog, which) -> {
                     Log.d("prawin","alert");
                     if(index==1)openApplicationSetting();
-                    else if(index==2)openApplicationSetting();
-                    else if(index==3){
+                    else if(index==2){
                         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         context.startActivity(intent);
                     }

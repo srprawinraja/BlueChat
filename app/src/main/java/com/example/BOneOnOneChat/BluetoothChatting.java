@@ -612,7 +612,6 @@ public class BluetoothChatting extends AppCompatActivity {
     private class ClientClass extends Thread {
         private BluetoothSocket socket;
 
-
         @SuppressLint("MissingPermission")
         public ClientClass (BluetoothDevice device1)
         {
@@ -769,13 +768,7 @@ public class BluetoothChatting extends AppCompatActivity {
 
         }
         else if(requestCode==permissionHandler.ACCESS_FINE_LOCATION_CODE){
-            if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                if((permissionHandler.currentApiVersion==permissionHandler.eleven || permissionHandler.currentApiVersion==permissionHandler.ten) &&ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)==PackageManager.PERMISSION_DENIED){
-                    permissionHandler.Alert(2);
-                }
-
-            }
-            else{
+            if(grantResults[0]==PackageManager.PERMISSION_DENIED) {
                 permissionHandler. showRationaleOrNot(Manifest.permission.ACCESS_FINE_LOCATION);
             }
         }
