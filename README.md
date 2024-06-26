@@ -1,7 +1,10 @@
-BlueChitChat:
+BlueChitChat
+
 Welcome to BlueChitChat, the ultimate offline chat app! Whether you're out of network coverage or just want to avoid data charges, BlueChitChat keeps you connected with your friends without the need for an internet connection. Built with Android Studio, Java, and XML, this app offers a sleek, customizable, and reliable messaging experience.
 
+
 Key Features:
+
 Manage Friends Device: Seamlessly manage your friends' devices with ease.
 Chat Without Internet: Enjoy uninterrupted conversations even without internet access.
 Saves Chat History: Never lose a conversation. All chat history is saved locally.
@@ -14,10 +17,14 @@ Connect & Disconnect Manually: Take control by manually connecting or disconnect
 Chatted Friends Device Storage: Easily reconnect with devices you've previously chatted with.
 
 Tech Stack
+
 Android Studio
-Java
-XML
+, Java and
+XML.
 
 
 Download
-Experience the future of offline messaging with [BlueChitChat on Amazon Appstore](https://www.amazon.com/gp/mas/dl/android?p=com.example.BOneOnOne
+
+Experience the future of offline messaging with BlueChitChat on Amazon Appstore.
+
+Amazon App store Link - https://www.amazon.com/gp/mas/dl/android?p=com.example.BOneOnOneChat
