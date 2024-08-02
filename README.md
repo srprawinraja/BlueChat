@@ -18,9 +18,15 @@ Chatted Friends Device Storage: Easily reconnect with devices you've previously 
 
 Tech Stack
 
-Android Studio
-, Java and
-XML.
+Programming Language : Java
+
+UI Design : XML
+
+Database : SQLite and Shared Preferences 
+
+Bluetooth Communication : Android Bluetooth API
+
+Development Environment: Android Studio (IDE) and Gradle (Build system)
 
 
 Download
