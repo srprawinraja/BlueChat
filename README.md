@@ -16,6 +16,7 @@ Displays Sent and Received Data: Track all the data you’ve sent and received.
 Connect & Disconnect Manually: Take control by manually connecting or disconnecting from devices.
 Chatted Friends Device Storage: Easily reconnect with devices you've previously chatted with.
 
+
 Tech Stack
 
 Programming Language : Java
@@ -27,6 +28,8 @@ Database : SQLite and Shared Preferences
 Bluetooth Communication : Android Bluetooth API
 
 Development Environment: Android Studio (IDE) and Gradle (Build system)
+
+
 
 
 Download
